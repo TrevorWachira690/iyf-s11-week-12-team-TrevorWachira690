@@ -1,7 +1,33 @@
-// SHARED FILE - used by everyone
-// See: docs/TEAM_DIVISION.md
-//
-// Every page that needs to talk to the backend goes through this
-// file. Tell the whole team before changing a function that already
-// exists here, since more than one part likely depends on it.
+const BASE_URL = "http://localhost:5000/api"; 
 
+async function request(endpoint, options = {}) {
+  const response = await fetch(`${BASE_URL}${endpoint}`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+    ...options,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Something went wrong");
+  }
+
+  return data;
+}
+
+export const api = {
+  register: (userData) =>
+    request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    }),
+
+  login: (credentials) =>
+    request('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(credentials),
+    }),
+};
