@@ -1,5 +1,18 @@
-// Owned by: Part 1, Person B
-// See: docs/part-1-accounts-and-login/person-b-frontend.md
-//
-// Wraps a page so it's only visible to logged-in users.
+import { useAuth } from '../context/AuthContext';
+import { Navigate } from 'react-router-dom';
 
+function ProtectedRoute({ children }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
+export default ProtectedRoute;

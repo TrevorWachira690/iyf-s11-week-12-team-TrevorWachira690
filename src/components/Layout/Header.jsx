@@ -1,5 +1,34 @@
-// Owned by: Part 1, Person B
-// See: docs/part-1-accounts-and-login/person-b-frontend.md
-//
-// The navigation bar shown at the top of every page.
+import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { useDarkMode } from '../../hooks/useDarkMode';
 
+function Header() {
+  const { user, logout } = useAuth();
+  const [isDark, setIsDark] = useDarkMode();
+
+  return (
+    <header>
+      <Link to="/">CommunityHub</Link>
+
+      <nav>
+        {user ? (
+          <>
+            <Link to="/profile">Profile</Link>
+            <button onClick={logout}>Log Out</button>
+          </>
+        ) : (
+          <>
+            <Link to="/login">Log In</Link>
+            <Link to="/register">Register</Link>
+          </>
+        )}
+
+        <button onClick={() => setIsDark(!isDark)}>
+          {isDark ? '☀️ Light Mode' : '🌙 Dark Mode'}
+        </button>
+      </nav>
+    </header>
+  );
+}
+
+export default Header;
