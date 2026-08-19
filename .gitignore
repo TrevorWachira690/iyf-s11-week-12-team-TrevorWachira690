@@ -26,3 +26,4 @@ dist-ssr
 # Environmental variables
 .env
 backend/.env
+*.env
