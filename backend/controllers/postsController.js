@@ -29,10 +29,52 @@ const createPost = async (req, res) => {
 // Get all listings
 const getPosts = async (req, res) => {
     try {
-        const posts = await Post.find().populate("author", "username businessName")
-        .sort({ createdAt: -1 });
-        res.status(200).json(posts);
-    } catch (error) {
+        const {
+            search,
+            category,
+            page = 1,
+            limit = 10
+        } =req.query;
+
+        const filter = {};
+
+        // search by title or description
+        if (search) {
+            filter.$or = [
+                { title: { $regex: search, $options: "i" } },
+                { description: { $regex: search, $options: "i" } }
+            ];
+        }
+
+        // filter by category
+        if (category) {
+            filter.category = category;
+        }
+
+        // pagination
+        const skip = (page - 1) * limit;
+
+        const posts = await Post.find(filter)
+            .populate("author", "username businessName")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(Number(limit));
+
+            const totalPosts = await Post.countDocuments(filter);
+
+            const totalPages = Math.ceil(totalPosts / limit);
+
+        res.status(200).json({
+            posts,
+            pagination: {
+                currentPage: Number(page),
+                totalPages,
+                totalPosts,
+                limit: Number(limit)
+            }
+        });
+    }
+    catch (error) {
         res.status(500).json({
             message: error.message
         });
