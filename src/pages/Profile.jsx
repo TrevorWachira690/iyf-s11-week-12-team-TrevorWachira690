@@ -17,7 +17,7 @@ function Profile() {
     <div className="flex">
       <div className="flex-1 p-4">
         <h2>Profile</h2>
-        <p><strong>Name:</strong> {user.name}</p>
+        <p><strong>Name:</strong> {user.username}</p>
         <p><strong>Email:</strong> {user.email}</p>
         <p><strong>Role:</strong> {user.role}</p>
 

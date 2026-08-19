@@ -40,16 +40,16 @@ function Register() {
   }
 
   const inputClass =
-    "border border-gray-300 rounded px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500";
-  const labelClass = "flex flex-col gap-1 text-sm font-medium text-gray-700";
+    "border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500";
+  const labelClass = "flex flex-col gap-1 text-sm font-medium text-gray-700 dark:text-gray-300";
 
   return (
     <div className="flex justify-center items-center min-h-[70vh] px-4 py-8">
-      <div className="w-full max-w-sm bg-white p-8 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Create an Account</h2>
+      <div className="w-full max-w-sm bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">Create an Account</h2>
 
         {error && (
-          <p role="alert" className="bg-red-100 text-red-700 text-sm p-3 rounded mb-4">
+          <p role="alert" className="bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 text-sm p-3 rounded mb-4">
             {error}
           </p>
         )}
@@ -91,10 +91,10 @@ function Register() {
             />
           </label>
 
-          <fieldset className="border border-gray-300 rounded p-3">
-            <legend className="text-sm font-medium text-gray-700 px-1">Account Type</legend>
+          <fieldset className="border border-gray-300 dark:border-gray-600 rounded p-3">
+            <legend className="text-sm font-medium text-gray-700 dark:text-gray-300 px-1">Account Type</legend>
             <div className="flex gap-4">
-              <label htmlFor="role-customer" className="flex items-center gap-2 text-sm text-gray-700">
+              <label htmlFor="role-customer" className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                 <input
                   id="role-customer"
                   type="radio"
@@ -105,7 +105,7 @@ function Register() {
                 />
                 Customer
               </label>
-              <label htmlFor="role-business" className="flex items-center gap-2 text-sm text-gray-700">
+              <label htmlFor="role-business" className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                 <input
                   id="role-business"
                   type="radio"
@@ -168,8 +168,8 @@ function Register() {
           </button>
         </form>
 
-        <p className="text-sm text-gray-600 mt-4 text-center">
-          Already have an account? <Link to="/login" className="text-blue-600 hover:underline">Log in</Link>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">
+          Already have an account? <Link to="/login" className="text-blue-600 dark:text-blue-400 hover:underline">Log in</Link>
         </p>
       </div>
     </div>

@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
 
 async function register(name, email, password, role, businessType, businessName, whatsappNumber) {
   const data = await api.register({
-    name,
+    username: name,
     email,
     password,
     role,
