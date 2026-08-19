@@ -1,5 +1,23 @@
-// Owned by: Part 1, Person B
-// See: docs/part-1-accounts-and-login/person-b-frontend.md
-//
-// Sets the browser tab title and description for each page.
+import { useEffect } from 'react';
 
+function SEO({ title, description }) {
+  useEffect(() => {
+    if (title) {
+      document.title = title;
+    }
+
+    if (description) {
+      let metaDescription = document.querySelector('meta[name="description"]');
+      if (!metaDescription) {
+        metaDescription = document.createElement('meta');
+        metaDescription.name = 'description';
+        document.head.appendChild(metaDescription);
+      }
+      metaDescription.content = description;
+    }
+  }, [title, description]);
+
+  return null;
+}
+
+export default SEO;

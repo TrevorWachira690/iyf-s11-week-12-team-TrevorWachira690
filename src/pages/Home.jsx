@@ -1,14 +1,13 @@
 import { Link } from 'react-router-dom';
+import HeroSection from '../components/HeroSection';
+import SEO from '../components/SEO';
+
 
 function Home() {
   return (
     <div>
-      <h2>Welcome to CommunityHub</h2>
-      <p>
-        <Link to="/login">Log In</Link>
-        {' | '}
-        <Link to="/register">Register</Link>
-      </p>
+      <SEO title="CommunityHub - Home" description="Connect with your community and discover local businesses." />
+      <HeroSection />
     </div>
   );
 }
