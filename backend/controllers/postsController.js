@@ -42,7 +42,8 @@ const getPosts = async (req, res) => {
         if (search) {
             filter.$or = [
                 { title: { $regex: search, $options: "i" } },
-                { description: { $regex: search, $options: "i" } }
+                { description: { $regex: search, $options: "i" } },
+                { category: { $regex: search, $options: "i" } }
             ];
         }
 
