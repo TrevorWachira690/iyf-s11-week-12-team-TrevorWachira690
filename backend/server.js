@@ -13,6 +13,7 @@ const config = require("./config");
 
 const authRoutes = require("./routes/auth");
 const postsRoutes = require("./routes/posts");
+const commentsRoutes = require("./routes/comments");
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -27,7 +28,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postsRoutes);
-
+app.use("/api",commentsRoutes);
 app.get("/", (req, res) => {
     res.json({ message: "Welcome to the Community Hub API" });
 });
