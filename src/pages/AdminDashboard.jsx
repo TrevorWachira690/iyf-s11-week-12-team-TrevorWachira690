@@ -1,171 +1,297 @@
-// Owned by: Part 3, Person B
-// See: docs/part-3-comments-and-likes/
-//
-// The page where a business account manages their own listings.
+import React, { useEffect, useState } from 'react';
+import { api } from '../services/api.js';
+import { useAuth } from '../context/AuthContext.jsx';
+import ConfirmDialog from '../components/ConfirmDialog.jsx';
+import StatusBadge from '../components/StatusBadge.jsx';
+import EmptyState from '../components/EmptyState.jsx';
+import SEO from '../components/SEO.jsx';
 
-import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext'; // adjust if the hook name differs
-import useFetch from '../hooks/useFetch';
-import Card from '../components/shared/Card';
-import Button from '../components/shared/Button';
-
-/*
- * NOTE ON NAMING: the project tree calls this file AdminDashboard.jsx,
- * but per PROJECT_OVERVIEW.md there is no separate "admin" role — the
- * two account types are "business" and "customer". This page is the
- * business owner's dashboard. Confirm with the group leader whether
- * to rename the file/route to something like BusinessDashboard, or
- * keep the existing filename and just treat "admin" as meaning
- * "business" in this project. The code below checks for a `business`
- * role, not an `admin` role — update the check if Part 1 defines
- * roles differently.
- *
- * You also need these two functions added to services/api.js by
- * Person A / yourself, matching whatever export/import endpoints
- * Person A actually builds in usersController.js:
- *
- *   export const exportMyData = async () => {
- *     const res = await api.get('/users/export');
- *     return res.data;
- *   };
- *
- *   export const importMyData = async (file) => {
- *     const formData = new FormData();
- *     formData.append('file', file);
- *     const res = await api.post('/users/import', formData, {
- *       headers: { 'Content-Type': 'multipart/form-data' },
- *     });
- *     return res.data;
- *   };
- *
- * Confirm the exact paths/shape with Person A before wiring this up.
- */
-import { exportMyData, importMyData } from '../services/api';
+const CATEGORIES = ['Electronics', 'Web Development', 'Data Analysis', 'Clothing Shopping', 'Design', 'Marketing', 'Writing', 'Photography', 'Music', 'Video', 'Other'];
 
 export default function AdminDashboard() {
   const { user } = useAuth();
-  const [importFile, setImportFile] = useState(null);
-  const [importStatus, setImportStatus] = useState(null); // 'success' | 'error' | null
-  const [importMessage, setImportMessage] = useState('');
-  const [exporting, setExporting] = useState(false);
-  const [exportError, setExportError] = useState(null);
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    price: '',
+    category: '',
+    image: '',
+    images: [],
+  });
+  const [imageFiles, setImageFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
+  const [formError, setFormError] = useState('');
+  const [formLoading, setFormLoading] = useState(false);
 
-  const {
-    data: listings,
-    loading: listingsLoading,
-    error: listingsError,
-  } = useFetch(
-    () => fetch(`/api/posts?business=${user?._id}`).then((r) => r.json()),
-    [user?._id]
-  );
+  useEffect(() => {
+    async function fetchListings() {
+      try {
+        const data = await api.getPosts();
+        const allListings = data.listings || data.posts || [];
+        const mine = allListings.filter(
+          (l) => l.author?._id === user?._id || l.author === user?._id
+        );
+        setListings(mine);
+      } catch (err) {
+        console.error('Failed to fetch listings:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (user) {
+      fetchListings();
+    }
+  }, [user]);
 
-  if (!user) {
-    return <p className="p-6 text-sm text-gray-500">Log in to view your dashboard.</p>;
+function handleImageChange(e) {
+     const files = Array.from(e.target.files);
+     // Validate each file size
+     for (const file of files) {
+       if (file.size > 5 * 1024 * 1024) {
+         setFormError('Image is too large. Please use photos under 5MB each.');
+         return;
+       }
+     }
+     
+     // Update state with new files
+     setImageFiles(prevFiles => {
+       // Remove duplicates (by name) and add new files
+       const existingNames = new Set(prevFiles.map(f => f.name));
+       const newFiles = files.filter(file => !existingNames.has(file.name));
+       return [...prevFiles, ...newFiles];
+     });
+     
+     // Generate previews for new files
+     files.forEach(file => {
+       const reader = new FileReader();
+       reader.onloadend = () => {
+         setImagePreviews(prev => [...prev, reader.result]);
+         // Update formData with all images (existing + new)
+         setFormData(prev => ({
+           ...prev,
+           images: [...new Set([...(prev.images || []), reader.result])] // Remove duplicates
+         }));
+       };
+       reader.readAsDataURL(file);
+     });
+   }
+
+  async function handleCreateListing(e) {
+    e.preventDefault();
+    setFormError('');
+    setFormLoading(true);
+    try {
+      await api.createPost({
+        title: formData.title,
+        description: formData.description,
+        price: Number(formData.price),
+        category: formData.category,
+        image: formData.image, // Keep for backward compatibility
+        images: formData.images || [] // Send images array
+      });
+      setShowCreateForm(false);
+      setFormData({ 
+        title: '', 
+        description: '', 
+        price: '', 
+        category: '', 
+        image: '',
+        images: []
+      });
+      setImageFiles([]);
+      setImagePreviews([]);
+      const data = await api.getPosts();
+      const allListings = data.listings || data.posts || [];
+      const mine = allListings.filter(
+        (l) => l.author?._id === user?._id || l.author === user?._id
+      );
+      setListings(mine);
+    } catch (err) {
+      setFormError(err.message);
+    } finally {
+      setFormLoading(false);
+    }
   }
 
-  if (user.role !== 'business') {
+  async function handleDelete(listingId) {
+    try {
+      await api.deletePost(listingId);
+      setListings((prev) => prev.filter((l) => l._id !== listingId));
+    } catch (err) {
+      console.error('Failed to delete listing:', err);
+    }
+    setDeleteTarget(null);
+  }
+
+  if (loading) {
     return (
-      <p className="p-6 text-sm text-gray-500">
-        This dashboard is only available to business accounts.
-      </p>
+      <div className="max-w-2xl mx-auto p-4">
+        <div className="text-center py-8 text-gray-500">Loading dashboard...</div>
+      </div>
     );
   }
 
-  const handleExport = async () => {
-    setExporting(true);
-    setExportError(null);
-    try {
-      const data = await exportMyData();
-      const blob = new Blob([JSON.stringify(data, null, 2)], {
-        type: 'application/json',
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'my-data-export.json';
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      setExportError(err.message || 'Export failed. Please try again.');
-    } finally {
-      setExporting(false);
-    }
-  };
-
-  const handleImport = async () => {
-    if (!importFile) {
-      setImportStatus('error');
-      setImportMessage('Choose a file first.');
-      return;
-    }
-    setImportStatus(null);
-    setImportMessage('');
-    try {
-      await importMyData(importFile);
-      setImportStatus('success');
-      setImportMessage('Import completed successfully.');
-      setImportFile(null);
-    } catch (err) {
-      setImportStatus('error');
-      setImportMessage(err.message || 'Import failed. Please check your file and try again.');
-    }
-  };
-
   return (
-    <div className="mx-auto max-w-3xl p-6">
-      <h1 className="text-xl font-semibold text-gray-900">Your Dashboard</h1>
-
-      <section className="mt-6">
-        <h2 className="text-base font-medium text-gray-900">Your Listings</h2>
-        {listingsLoading && <p className="mt-2 text-sm text-gray-500">Loading listings...</p>}
-        {listingsError && (
-          <p className="mt-2 text-sm text-red-600">Unable to load your listings.</p>
-        )}
-        {!listingsLoading && !listingsError && (!listings || listings.length === 0) && (
-          <p className="mt-2 text-sm text-gray-500">You haven't posted any listings yet.</p>
-        )}
-        <div className="mt-3 flex flex-col gap-2">
-          {listings?.map((listing) => (
-            <Card key={listing._id} className="!p-3">
-              <p className="text-sm font-medium text-gray-900">{listing.title}</p>
-              <p className="text-xs text-gray-500">{listing.status}</p>
-            </Card>
-          ))}
+    <>
+      <SEO title="TBM-DeepIn - My Listings" description="Manage your marketplace listings" />
+      
+      <div className="max-w-2xl mx-auto p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold">My Listings</h1>
+          <button
+            onClick={() => setShowCreateForm(!showCreateForm)}
+            className="bg-indigo-600 text-white rounded px-4 py-2 hover:bg-indigo-700"
+          >
+            {showCreateForm ? 'Cancel' : '+ New Listing'}
+          </button>
         </div>
-      </section>
 
-      <section className="mt-8">
-        <h2 className="text-base font-medium text-gray-900">Export Your Data</h2>
-        <p className="mt-1 text-sm text-gray-500">
-          Download a copy of your listings and account data.
-        </p>
-        <div className="mt-3">
-          <Button onClick={handleExport} disabled={exporting}>
-            {exporting ? 'Exporting...' : 'Export'}
-          </Button>
-          {exportError && <p className="mt-2 text-xs text-red-600">{exportError}</p>}
-        </div>
-      </section>
+        {/* Create Listing Form */}
+        {showCreateForm && (
+          <form onSubmit={handleCreateListing} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6 space-y-3">
+            <h2 className="text-lg font-semibold">Create New Listing</h2>
+            {formError && <p className="text-red-600 text-sm">{formError}</p>}
+            <input
+              type="text"
+              placeholder="Listing title"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              required
+              className="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <textarea
+              placeholder="Description"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              required
+              className="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+              rows={3}
+            />
+            <input
+              type="number"
+              placeholder="Price"
+              value={formData.price}
+              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              required
+              min={0}
+              className="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <select
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              required
+              className="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+            >
+              <option value="">Select category</option>
+              {CATEGORIES.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Product Images (up to 5)
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageChange}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+              />
+              {imagePreviews.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={preview}
+                        alt={`Product preview ${index + 1}`}
+                        className="w-20 h-20 object-cover rounded border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImagePreviews(prev => prev.filter((_, i) => i !== index));
+                          setFormData(prev => ({
+                            ...prev,
+                            images: prev.images.filter((_, i) => i !== index)
+                          }));
+                        }}
+                        className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={formLoading}
+              className="w-full bg-green-600 text-white rounded px-4 py-2 hover:bg-green-700 disabled:opacity-50"
+            >
+              {formLoading ? 'Creating...' : 'Create Listing'}
+            </button>
+          </form>
+        )}
 
-      <section className="mt-8">
-        <h2 className="text-base font-medium text-gray-900">Import Data</h2>
-        <div className="mt-3 flex items-center gap-2">
-          <input
-            type="file"
-            onChange={(e) => setImportFile(e.target.files?.[0] || null)}
-            className="text-sm"
-          />
-          <Button onClick={handleImport} variant="secondary">
-            Import
-          </Button>
-        </div>
-        {importStatus === 'success' && (
-          <p className="mt-2 text-xs text-green-600">{importMessage}</p>
+        {listings.length === 0 ? (
+          <EmptyState title="No listings yet" message="Create your first marketplace listing!" />
+        ) : (
+          <div className="space-y-4">
+            {listings.map((listing) => (
+              <div
+                key={listing._id}
+                className="border rounded-lg p-4 bg-white dark:bg-gray-800 shadow-sm"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="text-lg font-semibold text-indigo-600 dark:text-indigo-400">
+                    {listing.title}
+                  </h3>
+                  <StatusBadge status={listing.status} />
+                </div>
+
+                <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-2">
+                  {listing.description}
+                </p>
+
+                <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                  <span className="font-medium">${listing.price?.toLocaleString()}</span>
+                  <span>{listing.category}</span>
+                </div>
+
+                <div className="flex gap-3 mt-4">
+                  <a
+                    href={`https://wa.me/?text=Hi${encodeURIComponent(listing.author?.name || '')},%20I%20saw%20your%20listing%20"${listing.title}"`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-green-600 text-sm hover:underline"
+                  >
+                    Contact Owner
+                  </a>
+                  <button
+                    onClick={() => setDeleteTarget(listing)}
+                    className="text-red-600 text-sm hover:underline"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
-        {importStatus === 'error' && (
-          <p className="mt-2 text-xs text-red-600">{importMessage}</p>
-        )}
-      </section>
-    </div>
+
+        <ConfirmDialog
+          isOpen={!!deleteTarget}
+          message={`Delete "${deleteTarget?.title}"? This cannot be undone.`}
+          onConfirm={() => deleteTarget && handleDelete(deleteTarget._id)}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      </div>
+    </>
   );
 }
