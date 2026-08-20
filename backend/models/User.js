@@ -42,11 +42,10 @@ const userSchema = new mongoose.Schema(
 );
 
 // Scramble the password right before saving, but only if it changed
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+userSchema.pre('save', async function() {
+  if (!this.isModified('password')) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  next();
 });
 
 // Compare a typed-in password against the scrambled one we saved
