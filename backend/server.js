@@ -1,67 +1,80 @@
-// SHARED FILE - used by everyone
-// See: docs/TEAM_DIVISION.md
-//
-// The main backend file that starts the server and connects
-// everything together. The group leader reviews changes to this file.
-
-const express = require("express");
-const cors = require("cors");
-const mongoose = require("mongoose");
-
-
-const config = require("./config");
-
-const authRoutes = require("./routes/auth");
-const postsRoutes = require("./routes/posts");
-const commentsRoutes = require("./routes/comments");
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const passport = require('passport');
+const session = require('express-session');
 const config = require('./config');
-const errorHandler = require('./middleware/errorHandler');
+const { errorHandler, notFound } = require('./middleware/errorHandler');
+
+require('./config/passport');
+
 const authRoutes = require('./routes/auth');
+const postRoutes = require('./routes/posts');
+const commentRoutes = require('./routes/comments');
+const userRoutes = require('./routes/users');
+const healthRoutes = require('./routes/health');
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+// CORS: only allow the configured frontend URL(s) to call this API.
+const allowedOrigins = config.clientUrl.split(',').map((o) => o.trim());
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (curl, mobile apps, health checks)
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+  })
+);
 
-app.use("/api/auth", authRoutes);
-app.use("/api/posts", postsRoutes);
-app.use("/api",commentsRoutes);
-app.get("/", (req, res) => {
-    res.json({ message: "Welcome to the Community Hub API" });
-});
+app.use(express.json({ limit: '8mb' })); // 8mb to allow base64 image uploads
 
-mongoose.connect(config.mongodbUrl)
-.then(() => {
-    console.log("Connected to MongoDB");
+app.use(
+  session({
+    secret: config.jwtSecret,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
-    app.listen(config.port, () => {
-        console.log(`Server is running on port ${config.port}`);
-    });
-})
-.catch((error) => {
-    console.error("Error connecting to MongoDB:", error.message);
-});
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
-});
-
+// Routes
+app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/posts', postRoutes);
+app.use('/api/comments', commentRoutes);
+app.use('/api/users', userRoutes);
 
-// Keep this LAST — it catches errors from every route above
+app.get('/', (req, res) => {
+  res.json({ message: 'TBM-DeepIn API is running. See /api/health for status.' });
+});
+
+app.use(notFound);
 app.use(errorHandler);
 
-mongoose
-  .connect(config.mongoUri)
-  .then(() => {
-    console.log('Connected to MongoDB');
+async function start() {
+  try {
+    if (config.mongoUri) {
+      await mongoose.connect(config.mongoUri);
+      console.log('[db] Connected to MongoDB');
+    } else {
+      console.warn('[db] No MONGO_URI set - server will start but DB routes will fail.');
+    }
+
     app.listen(config.port, () => {
-      console.log(`Server running on http://localhost:${config.port}`);
+      console.log(`[server] Listening on port ${config.port} (${config.nodeEnv})`);
     });
-  })
-  .catch((err) => {
-    console.error('Failed to connect to MongoDB:', err.message);
+  } catch (err) {
+    console.error('[server] Failed to start:', err.message);
     process.exit(1);
-  });
+  }
+}
+
+start();
+
+module.exports = app;
