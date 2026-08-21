@@ -4,6 +4,10 @@
 // Catches errors from anywhere in the backend and turns them into a
 // clean response instead of crashing the server.
 
+function notFound(req, res, next) {
+  res.status(404).json({ error: 'Not found.' });
+}
+
 function errorHandler(err, req, res, next) {
   console.error(err.stack);
 
@@ -23,4 +27,4 @@ function errorHandler(err, req, res, next) {
   });
 }
 
-module.exports = errorHandler;
+module.exports = { errorHandler, notFound };

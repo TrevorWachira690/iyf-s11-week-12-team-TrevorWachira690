@@ -1,5 +1,8 @@
-// SHARED FILE - used by everyone
-// See: docs/TEAM_DIVISION.md
-//
-// A simple route to check whether the backend server is running.
+const express = require('express');
+const router = express.Router();
 
+router.get('/', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
+module.exports = router;
