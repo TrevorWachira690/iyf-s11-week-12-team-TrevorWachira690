@@ -8,7 +8,7 @@ const getComments = async (req, res, next) => {
     const { postId } = req.params;
 
     const comments = await Comment.find({ post: postId })
-      .populate('author', 'name avatar')
+      .populate('author', 'username businessName avatar')
       .sort({ createdAt: -1 });
 
     res.json({ comments });
@@ -41,7 +41,7 @@ const createComment = async (req, res, next) => {
 
     const populated = await Comment.findById(comment._id).populate(
       'author',
-      'name avatar'
+      'username businessName avatar'
     );
 
     res.status(201).json({ comment: populated });
@@ -75,3 +75,4 @@ module.exports = {
   createComment,
   deleteComment,
 };
+

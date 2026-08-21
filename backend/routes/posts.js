@@ -17,7 +17,7 @@ const router = express.Router();
 router.get('/', async (req, res, next) => {
   try {
     const listings = await Post.find({ status: 'published' })
-      .populate('author', 'name avatar whatsappNumber')
+      .populate('author', 'username businessName')
       .sort({ createdAt: -1 });
 
     res.json({ listings });
@@ -46,7 +46,7 @@ router.get('/search', async (req, res, next) => {
         { category: { $regex: regex } }
       ]
     })
-    .populate('author', 'name avatar whatsappNumber')
+    .populate('author', 'username businessName')
     .sort({ createdAt: -1 });
 
     res.json({ listings });
@@ -59,7 +59,7 @@ router.get('/search', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const post = await Post.findById(req.params.id)
-      .populate('author', 'name avatar whatsappNumber');
+      .populate('author', 'username businessName');
     if (!post) {
       return res.status(404).json({ error: 'Listing not found.' });
     }

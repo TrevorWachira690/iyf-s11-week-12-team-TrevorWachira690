@@ -167,12 +167,12 @@ export default function PostDetail() {
             {listing.author?.avatar && (
               <img
                 src={listing.author.avatar}
-                alt={listing.author.name}
+                alt={listing.author.businessName || listing.author.username}
                 className="w-8 h-8 rounded-full object-cover"
               />
             )}
             <span>
-              Posted by <strong>{listing.author?.name || 'Unknown'}</strong>
+              Posted by <strong>{listing.author?.businessName || listing.author?.username || 'Unknown'}</strong>
             </span>
             {user && (
               <>
@@ -254,14 +254,14 @@ export default function PostDetail() {
               {comments.map((comment) => (
                 <div key={comment._id} className="border-b pb-3 last:border-0">
                   <div className="flex items-center gap-2 mb-1">
-                    {comment.author?.avatar && (
+                     {comment.author?.avatar && (
                       <img
                         src={comment.author.avatar}
-                        alt={comment.author.name}
+                        alt={comment.author.businessName || comment.author.username}
                         className="w-5 h-5 rounded-full object-cover"
                       />
                     )}
-                    <span className="font-medium text-sm">{comment.author?.name || 'Anonymous'}</span>
+                    <span className="font-medium text-sm">{comment.author?.businessName || comment.author?.username || 'Anonymous'}</span>
                     <span className="text-xs text-gray-400">
                       {new Date(comment.createdAt).toLocaleDateString()}
                     </span>

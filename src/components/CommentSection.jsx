@@ -95,7 +95,7 @@ export default function CommentSection({ postId }) {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-900">
-                  {comment.author?.name || comment.author?.username || 'User'}
+                  {comment.author?.businessName || comment.author?.username || 'User'}
                 </p>
                 <p className="mt-1 text-sm text-gray-700">{comment.content}</p>
                 <p className="mt-1 text-xs text-gray-400">

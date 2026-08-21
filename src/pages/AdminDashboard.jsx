@@ -38,6 +38,9 @@ export default function AdminDashboard() {
   const [imagePreviews, setImagePreviews] = useState([]);
   const [formError, setFormError] = useState("");
   const [formLoading, setFormLoading] = useState(false);
+  const [listingComments, setListingComments] = useState({});
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [expandedListing, setExpandedListing] = useState(null);
 
   useEffect(() => {
     async function fetchListings() {
@@ -48,10 +51,26 @@ export default function AdminDashboard() {
           (l) => l.author?._id === user?._id || l.author === user?._id,
         );
         setListings(mine);
+
+        // Fetch comments for each listing
+        setCommentsLoading(true);
+        const commentsMap = {};
+        await Promise.all(
+          mine.map(async (listing) => {
+            try {
+              const commentsData = await api.getComments(listing._id);
+              commentsMap[listing._id] = commentsData.comments || [];
+            } catch {
+              commentsMap[listing._id] = [];
+            }
+          })
+        );
+        setListingComments(commentsMap);
       } catch (err) {
         console.error("Failed to fetch listings:", err);
       } finally {
         setLoading(false);
+        setCommentsLoading(false);
       }
     }
     if (user) {
@@ -278,47 +297,85 @@ export default function AdminDashboard() {
           />
         ) : (
           <div className="space-y-4">
-            {listings.map((listing) => (
-              <div
-                key={listing._id}
-                className="border rounded-lg p-4 bg-white dark:bg-gray-800 shadow-sm"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-indigo-600 dark:text-indigo-400">
-                    {listing.title}
-                  </h3>
-                  <StatusBadge status={listing.status} />
-                </div>
+            {listings.map((listing) => {
+              const comments = listingComments[listing._id] || [];
+              const isExpanded = expandedListing === listing._id;
+              return (
+                <div
+                  key={listing._id}
+                  className="border rounded-lg p-4 bg-white dark:bg-gray-800 shadow-sm"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="text-lg font-semibold text-indigo-600 dark:text-indigo-400">
+                      {listing.title}
+                    </h3>
+                    <StatusBadge status={listing.status} />
+                  </div>
 
-                <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-2">
-                  {listing.description}
-                </p>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-2">
+                    {listing.description}
+                  </p>
 
-                <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                  <span className="font-medium">
-                    ${listing.price?.toLocaleString()}
-                  </span>
-                  <span>{listing.category}</span>
-                </div>
+                  <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                    <span className="font-medium">
+                      ${listing.price?.toLocaleString()}
+                    </span>
+                    <span>{listing.category}</span>
+                    <span>💬 {comments.length}</span>
+                  </div>
 
-                <div className="flex gap-3 mt-4">
-                  <a
-                    href={`https://wa.me/?text=Hi${encodeURIComponent(listing.author?.name || "")},%20I%20saw%20your%20listing%20"${listing.title}"`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-green-600 text-sm hover:underline"
-                  >
-                    Contact Owner
-                  </a>
-                  <button
-                    onClick={() => setDeleteTarget(listing)}
-                    className="text-red-600 text-sm hover:underline"
-                  >
-                    Delete
-                  </button>
+                  <div className="flex gap-3 mt-4">
+                    <button
+                      onClick={() => setExpandedListing(isExpanded ? null : listing._id)}
+                      className="text-indigo-600 text-sm hover:underline"
+                    >
+                      {isExpanded ? 'Hide Comments' : `View Comments (${comments.length})`}
+                    </button>
+                    <a
+                      href={`https://wa.me/?text=Hi${encodeURIComponent(listing.author?.businessName || listing.author?.username || '')},%20I%20saw%20your%20listing%20"${listing.title}"`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-green-600 text-sm hover:underline"
+                    >
+                      Contact Owner
+                    </a>
+                    <button
+                      onClick={() => setDeleteTarget(listing)}
+                      className="text-red-600 text-sm hover:underline"
+                    >
+                      Delete
+                    </button>
+                  </div>
+
+                  {isExpanded && (
+                    <div className="mt-4 pt-4 border-t">
+                      <h4 className="text-sm font-semibold mb-2">Comments</h4>
+                      {commentsLoading ? (
+                        <p className="text-gray-500 text-sm">Loading comments...</p>
+                      ) : comments.length === 0 ? (
+                        <p className="text-gray-500 text-sm">No comments yet.</p>
+                      ) : (
+                        <div className="space-y-3">
+                          {comments.map((comment) => (
+                            <div key={comment._id} className="bg-gray-50 dark:bg-gray-700 rounded p-3">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-medium text-sm">
+                                  {comment.author?.businessName || comment.author?.username || 'Anonymous'}
+                                </span>
+                                <span className="text-xs text-gray-400">
+                                  {new Date(comment.createdAt).toLocaleDateString()}
+                                </span>
+                              </div>
+                              <p className="text-gray-700 dark:text-gray-300 text-sm">{comment.content}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 

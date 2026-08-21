@@ -66,15 +66,15 @@ export default function PostCard({ post }) {
       <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
         <div className="flex items-center gap-2">
           {author.avatar && (
-            <img
-              src={author.avatar}
-              alt={author.name}
-              className="w-5 h-5 rounded-full object-cover"
-            />
-          )}
-          <span className="truncate max-w-[80px]" title={author.name}>
-            By {author.name || 'Unknown'}
-          </span>
+              <img
+                src={author.avatar}
+                alt={author.businessName || author.username}
+                className="w-5 h-5 rounded-full object-cover"
+              />
+            )}
+            <span className="truncate max-w-[80px]" title={author.businessName || author.username}>
+              By {author.businessName || author.username || 'Unknown'}
+            </span>
           {isBusinessUser && (
             <button
               onClick={handleBusinessClick}
