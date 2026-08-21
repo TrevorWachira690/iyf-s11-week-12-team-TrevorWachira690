@@ -28,7 +28,7 @@ const createPost = async (req, res) => {
 
 // Get all listings
 const getPosts = async (req, res) => {
-    try {
+        try {
         const {
             search,
             category,
@@ -65,8 +65,8 @@ const getPosts = async (req, res) => {
 
             const totalPages = Math.ceil(totalPosts / limit);
 
-        res.status(200).json({
-            posts,
+                res.status(200).json({
+          posts,
             pagination: {
                 currentPage: Number(page),
                 totalPages,
@@ -176,3 +176,6 @@ module.exports = {
     updatePost,
     deletePost
 };
+
+
+

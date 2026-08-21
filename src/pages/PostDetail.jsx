@@ -87,7 +87,7 @@ export default function PostDetail() {
 
   if (isLoading) {
     return (
-      <div className="max-w-2xl mx-auto p-4">
+      <div className="max-w-2xl mx-auto p-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <div className="text-center py-8 text-gray-500">Loading listing...</div>
       </div>
     );
@@ -95,7 +95,7 @@ export default function PostDetail() {
 
   if (!listing) {
     return (
-      <div className="max-w-2xl mx-auto p-4">
+      <div className="max-w-2xl mx-auto p-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <EmptyState title="Listing not found" message="The listing you're looking for doesn't exist." />
       </div>
     );
@@ -116,7 +116,7 @@ export default function PostDetail() {
         description={`${listing.title} - ${listing.category}`} 
       />
       
-      <div className="max-w-2xl mx-auto p-4">
+      <div className="max-w-2xl mx-auto p-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <Link to="/" className="text-indigo-600 dark:text-indigo-400 text-sm mb-4 inline-block">
           ← Back to listings
         </Link>
@@ -167,12 +167,12 @@ export default function PostDetail() {
             {listing.author?.avatar && (
               <img
                 src={listing.author.avatar}
-                alt={listing.author.name}
+                alt={listing.author.businessName || listing.author.username}
                 className="w-8 h-8 rounded-full object-cover"
               />
             )}
             <span>
-              Posted by <strong>{listing.author?.name || 'Unknown'}</strong>
+              Posted by <strong>{listing.author?.businessName || listing.author?.username || 'Unknown'}</strong>
             </span>
             {user && (
               <>
@@ -254,14 +254,14 @@ export default function PostDetail() {
               {comments.map((comment) => (
                 <div key={comment._id} className="border-b pb-3 last:border-0">
                   <div className="flex items-center gap-2 mb-1">
-                    {comment.author?.avatar && (
+                     {comment.author?.avatar && (
                       <img
                         src={comment.author.avatar}
-                        alt={comment.author.name}
+                        alt={comment.author.businessName || comment.author.username}
                         className="w-5 h-5 rounded-full object-cover"
                       />
                     )}
-                    <span className="font-medium text-sm">{comment.author?.name || 'Anonymous'}</span>
+                    <span className="font-medium text-sm">{comment.author?.businessName || comment.author?.username || 'Anonymous'}</span>
                     <span className="text-xs text-gray-400">
                       {new Date(comment.createdAt).toLocaleDateString()}
                     </span>
