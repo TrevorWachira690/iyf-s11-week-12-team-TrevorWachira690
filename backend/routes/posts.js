@@ -18,7 +18,6 @@ router.get('/', async (req, res, next) => {
   try {
     const listings = await Post.find({ status: 'published' })
       .populate('author', 'name avatar whatsappNumber')
-      .select('-likedBy -dislikedBy') // Exclude arrays from response, only send counts
       .sort({ createdAt: -1 });
 
     res.json({ listings });
@@ -48,7 +47,6 @@ router.get('/search', async (req, res, next) => {
       ]
     })
     .populate('author', 'name avatar whatsappNumber')
-    .select('-likedBy -dislikedBy')
     .sort({ createdAt: -1 });
 
     res.json({ listings });
@@ -61,8 +59,7 @@ router.get('/search', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const post = await Post.findById(req.params.id)
-      .populate('author', 'name avatar whatsappNumber')
-      .select('-likedBy -dislikedBy');
+      .populate('author', 'name avatar whatsappNumber');
     if (!post) {
       return res.status(404).json({ error: 'Listing not found.' });
     }
@@ -89,7 +86,7 @@ router.post('/', requireAuth, async (req, res, next) => {
       category,
       image: image || imageArray[0] || '',
       images: imageArray,
-      author: req.userId,
+      author: req.user._id,
     });
 
     res.status(201).json({ post });
@@ -105,7 +102,7 @@ router.put('/:id', requireAuth, async (req, res, next) => {
     if (!post) {
       return res.status(404).json({ error: 'Listing not found.' });
     }
-    if (post.author.toString() !== req.userId) {
+    if (post.author.toString() !== req.user._id.toString()) {
       return res.status(403).json({ error: 'You can only edit your own listings.' });
     }
 
@@ -135,7 +132,7 @@ router.delete('/:id', requireAuth, async (req, res, next) => {
     if (!post) {
       return res.status(404).json({ error: 'Listing not found.' });
     }
-    if (post.author.toString() !== req.userId) {
+    if (post.author.toString() !== req.user._id.toString()) {
       return res.status(403).json({ error: 'You can only delete your own listings.' });
     }
 
@@ -154,7 +151,7 @@ router.post('/:id/like', requireAuth, async (req, res, next) => {
       return res.status(404).json({ error: 'Listing not found.' });
     }
 
-    const userId = req.userId;
+    const userId = req.user._id;
     const isLiked = post.likedBy.includes(userId);
     const isDisliked = post.dislikedBy.includes(userId);
 
@@ -197,7 +194,7 @@ router.post('/:id/dislike', requireAuth, async (req, res, next) => {
       return res.status(404).json({ error: 'Listing not found.' });
     }
 
-    const userId = req.userId;
+    const userId = req.user._id;
     const isLiked = post.likedBy.includes(userId);
     const isDisliked = post.dislikedBy.includes(userId);
 
@@ -233,3 +230,5 @@ router.post('/:id/dislike', requireAuth, async (req, res, next) => {
 });
 
 module.exports = router;
+
+
