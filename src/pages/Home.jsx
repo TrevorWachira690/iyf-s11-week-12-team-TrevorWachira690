@@ -130,7 +130,7 @@ export default function Home() {
         description="Browse and create marketplace listings for small businesses" 
       />
       
-      <div className="max-w-4xl mx-auto p-4">
+      <div className="max-w-4xl mx-auto p-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <div className="rounded-xl bg-slate-900/30 dark:bg-slate-800/50 p-4 mb-6 border border-slate-200/20 dark:border-slate-700/30">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">TBM-DeepIn</h1>
