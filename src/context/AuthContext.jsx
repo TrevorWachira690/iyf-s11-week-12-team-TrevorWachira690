@@ -8,27 +8,39 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function restoreSession() {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-      try {
-        const data = await api.getMe();
-        setUser(data.user);
-      } catch {
-        localStorage.removeItem('token');
-      } finally {
-        setLoading(false);
-      }
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setLoading(false);
+      return;
     }
-    restoreSession();
+
+    api
+      .getMe()
+      .then((data) => setUser(data.user))
+      .catch(() => {
+        localStorage.removeItem('token');
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  function login(token, userData) {
-    localStorage.setItem('token', token);
-    setUser(userData);
+  async function login(email, password) {
+    const data = await api.login({ email, password });
+    localStorage.setItem('token', data.token);
+    setUser(data.user);
+    return data.user;
+  }
+
+  async function register(username, email, password, role, businessName) {
+    const data = await api.register({ 
+      username, 
+      email, 
+      password, 
+      role, 
+      businessName: businessName || '',
+    });
+    localStorage.setItem('token', data.token);
+    setUser(data.user);
+    return data.user;
   }
 
   function logout() {
@@ -37,16 +49,14 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, setUser, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used inside an AuthProvider');
+  return ctx;
 }
