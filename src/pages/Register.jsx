@@ -1,179 +1,136 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext.jsx';
+import SEO from '../components/SEO.jsx';
 
-function Register() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function Register() {
+  const { register } = useAuth();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    businessName: '',
+    whatsappNumber: '',
+  });
   const [role, setRole] = useState('customer');
   const [businessType, setBusinessType] = useState('');
-  const [businessName, setBusinessName] = useState('');
-  const [whatsappNumber, setWhatsappNumber] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { register } = useAuth();
-  const navigate = useNavigate();
-
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       await register(
-        name,
-        email,
-        password,
+        formData.name,
+        formData.email,
+        formData.password,
         role,
         businessType,
-        businessName,
-        whatsappNumber
+        role === 'business' ? formData.businessName : '',
+        role === 'business' ? formData.whatsappNumber : ''
       );
-      navigate('/profile');
+      navigate('/');
     } catch (err) {
-      setError(err.message || 'Registration failed. Please try again.');
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   }
 
-  const inputClass =
-    "border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500";
-  const labelClass = "flex flex-col gap-1 text-sm font-medium text-gray-700 dark:text-gray-300";
-
   return (
-    <div className="flex justify-center items-center min-h-[70vh] px-4 py-8">
-      <div className="w-full max-w-sm bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">Create an Account</h2>
-
-        {error && (
-          <p role="alert" className="bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 text-sm p-3 rounded mb-4">
-            {error}
-          </p>
-        )}
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <label htmlFor="name" className={labelClass}>
-            Name
-            <input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className={inputClass}
-            />
-          </label>
-
-          <label htmlFor="email" className={labelClass}>
-            Email
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className={inputClass}
-            />
-          </label>
-
-          <label htmlFor="password" className={labelClass}>
-            Password
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className={inputClass}
-            />
-          </label>
-
-          <fieldset className="border border-gray-300 dark:border-gray-600 rounded p-3">
-            <legend className="text-sm font-medium text-gray-700 dark:text-gray-300 px-1">Account Type</legend>
-            <div className="flex gap-4">
-              <label htmlFor="role-customer" className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                <input
-                  id="role-customer"
-                  type="radio"
-                  name="role"
-                  value="customer"
-                  checked={role === 'customer'}
-                  onChange={(e) => setRole(e.target.value)}
-                />
-                Customer
-              </label>
-              <label htmlFor="role-business" className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                <input
-                  id="role-business"
-                  type="radio"
-                  name="role"
-                  value="business"
-                  checked={role === 'business'}
-                  onChange={(e) => setRole(e.target.value)}
-                />
-                Business
-              </label>
-            </div>
-          </fieldset>
-
+    <>
+      <SEO 
+        title="TBM-DeepIn - Register" 
+        description="Create a new account as a business or customer to start buying or selling marketplace listings."
+      />
+      
+      <div className="max-w-sm mx-auto p-6 mt-10 bg-white dark:bg-gray-800 rounded-lg shadow">
+        <h1 className="text-xl font-bold mb-4">Sign up</h1>
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <input
+            type="text"
+            placeholder="Name"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            required
+            className="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            required
+            className="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+          />
+          <input
+            type="password"
+            placeholder="Password (min 6 characters)"
+            value={formData.password}
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            required
+            minLength={6}
+            className="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+          />
+          <select
+            value={role}
+            onChange={(e) => {
+              setRole(e.target.value);
+              setBusinessType('');
+              setFormData({ name: formData.name, email: formData.email, password: formData.password, businessName: '', whatsappNumber: '' });
+            }}
+            className="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+          >
+            <option value="customer">Customer</option>
+            <option value="business">Business</option>
+          </select>
+          
           {role === 'business' && (
             <>
-              <label htmlFor="businessType" className={labelClass}>
-                Business Type
-                <input
-                  id="businessType"
-                  type="text"
-                  value={businessType}
-                  onChange={(e) => setBusinessType(e.target.value)}
-                  required
-                  className={inputClass}
-                />
-              </label>
-
-              <label htmlFor="businessName" className={labelClass}>
-                Business Name
-                <input
-                  id="businessName"
-                  type="text"
-                  value={businessName}
-                  onChange={(e) => setBusinessName(e.target.value)}
-                  required
-                  className={inputClass}
-                />
-              </label>
-
-              <label htmlFor="whatsappNumber" className={labelClass}>
-                WhatsApp Number
-                <input
-                  id="whatsappNumber"
-                  type="tel"
-                  value={whatsappNumber}
-                  onChange={(e) => setWhatsappNumber(e.target.value)}
-                  required
-                  className={inputClass}
-                />
-              </label>
+              <input
+                type="text"
+                placeholder="Business Name"
+                value={formData.businessName}
+                onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                required
+                className="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <select
+                value={businessType}
+                onChange={(e) => setBusinessType(e.target.value)}
+                className="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+              >
+                <option value="">Select business type</option>
+                <option value="company">Company</option>
+                <option value="entrepreneur">Entrepreneur</option>
+              </select>
+              <input
+                type="tel"
+                placeholder="WhatsApp Number (e.g., 254712345678)"
+                value={formData.whatsappNumber}
+                onChange={(e) => setFormData({ ...formData, whatsappNumber: e.target.value })}
+                required
+                className="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+              />
             </>
           )}
-
+          
+          {error && <p className="text-red-600 text-sm">{error}</p>}
           <button
             type="submit"
-            disabled={loading}
-            className="bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            disabled={loading || (role === 'business' && (!formData.businessName || !businessType || !formData.whatsappNumber))}
+            className="w-full bg-indigo-600 text-white rounded px-3 py-2 hover:bg-indigo-700 disabled:opacity-50"
           >
-            {loading ? 'Creating account...' : 'Register'}
+            {loading ? 'Creating account...' : 'Sign up'}
           </button>
         </form>
-
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">
-          Already have an account? <Link to="/login" className="text-blue-600 dark:text-blue-400 hover:underline">Log in</Link>
+        <p className="text-sm mt-4 text-gray-500">
+          Already have an account? <Link to="/login" className="text-indigo-600">Log in</Link>
         </p>
       </div>
-    </div>
+    </>
   );
 }
-
-export default Register;

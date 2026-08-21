@@ -1,91 +1,115 @@
-// Owned by: Part 1, Person B
-// See: docs/part-1-accounts-and-login/person-b-frontend.md
-//
-// The page where an existing user logs in.
-//
-// Design note: a two-column spread. The form sits in the right column;
-// the left is a title and one line of copy, so the page has a shape
-// rather than being a card floating in the middle of nothing.
-
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext.jsx';
+import SEO from '../components/SEO.jsx';
 
-function Login() {
+export default function Login() {
+  const { login, googleLogin } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
-  const navigate = useNavigate();
-
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       await login(email, password);
-      navigate('/profile');
+      navigate('/');
     } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   }
 
+  const handleGoogleLogin = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/google`;
+    } catch (err) {
+      setError('Google login failed. Please try again.');
+      setLoading(false);
+    }
+  }
+
   return (
-    <div className="flex justify-center items-center min-h-[70vh] px-4">
-      <div className="w-full max-w-sm bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">Log In</h2>
-
-        {error && (
-          <p role="alert" className="bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 text-sm p-3 rounded mb-4">
-            {error}
-          </p>
-        )}
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <label htmlFor="email" className="flex flex-col gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-            Email
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </label>
-
-          <label htmlFor="password" className="flex flex-col gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-            Password
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </label>
-
+    <>
+      <SEO 
+        title="TBM-DeepIn - Login" 
+        description="Log in to your TBM-DeepIn account to access your listings and manage your profile."
+      />
+      
+      <div className="max-w-sm mx-auto p-6 mt-10 bg-white dark:bg-gray-800 rounded-lg shadow">
+        <h1 className="text-xl font-bold mb-4">Log in</h1>
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600"
+          />
+          {error && <p className="text-red-600 text-sm">{error}</p>}
           <button
             type="submit"
             disabled={loading}
-            className="bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="w-full bg-indigo-600 text-white rounded px-3 py-2 hover:bg-indigo-700 disabled:opacity-50"
           >
-            {loading ? 'Logging in...' : 'Log In'}
+            {loading ? 'Logging in...' : 'Log in'}
           </button>
         </form>
 
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 text-center">
-          Don't have an account? <Link to="/register" className="text-blue-600 dark:text-blue-400 hover:underline">Register</Link>
+        <div className="mt-4 flex items-center">
+          <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+          <span className="mx-3 text-gray-400 text-sm">or</span>
+          <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+        </div>
+
+        <button
+          onClick={handleGoogleLogin}
+          disabled={loading}
+          className="w-full mt-4 flex items-center justify-center gap-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50"
+        >
+          <svg className="w-5 h-5" viewBox="0 0 24 24">
+            <path
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+              fill="#4285F4"
+            />
+            <path
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              fill="#34A853"
+            />
+            <path
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              fill="#FBBC05"
+            />
+            <path
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              fill="#EA4335"
+            />
+          </svg>
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Continue with Google
+          </span>
+        </button>
+
+        <p className="text-sm mt-4 text-gray-500">
+          No account? <Link to="/register" className="text-indigo-600">Sign up</Link>
         </p>
       </div>
-    </div>
+    </>
   );
 }
-
-export default Login;

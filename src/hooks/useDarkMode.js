@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 
+// Manages the "dark" class on <html> and remembers the user's choice
+// in localStorage so it persists across page reloads.
 export function useDarkMode() {
   const [isDark, setIsDark] = useState(() => {
     const stored = localStorage.getItem('theme');
