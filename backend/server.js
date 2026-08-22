@@ -45,7 +45,7 @@ if (config.nodeEnv === 'production') {
 
   // Any route that isn't /api/* falls through to the React app,
   // so client-side routing (React Router) works on refresh/direct links.
-  app.get('*', (req, res) => {
+  app.get('/*splat', (req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
   });
 } else {
