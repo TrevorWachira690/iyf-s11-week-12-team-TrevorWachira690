@@ -15,13 +15,17 @@ const app = express();
 
 // CORS: only allow the configured frontend URL(s) to call this API.
 const allowedOrigins = config.clientUrl.split(',').map((o) => o.trim());
+console.log('[cors] Allowed origins:', allowedOrigins);
 app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-      return callback(new Error('Not allowed by CORS'));
+      console.warn('[cors] Rejected origin:', origin);
+      // Reject without throwing, so a bad origin returns a normal
+      // "no access" response instead of crashing the whole request.
+      return callback(null, false);
     },
     credentials: true,
   })
