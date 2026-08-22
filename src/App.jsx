@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
+import Footer from './components/Footer.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import Home from './pages/Home.jsx';
 import PostDetail from './pages/PostDetail.jsx';
@@ -14,27 +15,27 @@ import CategoryPage from './pages/CategoryPage.jsx';
 // chat before editing — see TEAM_DIVISION.md "Collaboration Rules".
 export default function App() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/posts/:id" element={<PostDetail />} />
-        <Route path="/category/:category" element={<CategoryPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/business/:id/listings" element={<BusinessListings />} />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute requireRole="business">
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+      <div className="flex-1">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/posts/:id" element={<PostDetail />} />
+          <Route path="/category/:category" element={<CategoryPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/business/:id/listings" element={<BusinessListings />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requireRole="business">
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </div>
+      <Footer />
     </div>
   );
 }
- 
-
- 
