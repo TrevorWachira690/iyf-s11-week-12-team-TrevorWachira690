@@ -5,12 +5,12 @@
 | Name | GitHub | Role | Contributions |
 |------|--------|------|---------------|
 | Trevor Wachira | [@TrevorWachira690](https://github.com/TrevorWachira690) | Group Lead | Project setup, documentation, integration, code review, conflict resolution |
-| Brian Mwangi | [@brianirungu224](https://github.com/brianirungu224) | Part 3 Backend | Comment routes, like/dislike endpoints, backend Part 3 implementation |
-| [Part 1 Backend] | [@username](https://github.com/username) | Part 1 Backend | User model, auth controller, JWT middleware, MongoDB setup, error handling |
-| [Part 1 Frontend] | [@username](https://github.com/username) | Part 1 Frontend | Login/register pages, auth context, protected routes, dark mode, header/footer |
-| [Part 2 Backend] | [@username](https://github.com/username) | Part 2 Backend | Post model, listings CRUD, search, category filter, pagination, authorization |
-| [Part 2 Frontend] | [@username](https://github.com/username) | Part 2 Frontend | Home page, listing cards, category page, post detail layout, search bar, status badges |
-| [Part 3 Frontend] | [@username](https://github.com/username) | Part 3 Frontend | Comments UI, reactions, dashboard, shared components, hooks, API service |
+| Brian Mwangi | [@brianirungu224-sys](https://github.com/brianirungu224-sys) | Part 3 Backend | Comment routes, like/dislike endpoints, backend Part 3 implementation |
+| Gilbert  | [@dream333wxrld-juice](https://github.com/dream333wxrld-juice) | Part 1 Backend | User model, auth controller, JWT middleware, MongoDB setup, error handling |
+| Christine Kamau | [@kaywambui-1](https://github.com/kaywambui-1) | Part 1 Frontend | Login/register pages, auth context, protected routes, dark mode, header/footer |
+| Antony Juma | [@itskaysir](https://github.com/itskaysir) | Part 2 Backend | Post model, listings CRUD, search, category filter, pagination, authorization |
+| Antony Junma | [@itskaysir](https://github.com/itskaysir) | Part 2 Frontend | Home page, listing cards, category page, post detail layout, search bar, status badges |
+| Jacob Mbuco | [@jacobricktified](https://github.com/jacobricktified) | Part 3 Frontend | Comments UI, reactions, dashboard, shared components, hooks, API service |
 
 ## Contribution Breakdown
 
@@ -41,7 +41,7 @@
 - Implemented `errorHandler` middleware for validation errors and duplicate key handling
 - Debugged initial model configuration issues to ensure MongoDB compatibility
 
-### [Part 1 Frontend] — Part 1 Frontend
+### Christine Kamau — Part 1 Frontend
 - Scaffolded login and registration pages (`Login.jsx`, `Register.jsx`) with form structures
 - Set up `AuthContext` for global authentication state management
 - Created `ProtectedRoute.jsx` wrapper to guard authenticated pages
@@ -49,7 +49,7 @@
 - Styled header and footer components with responsive Tailwind CSS classes
 - Wired frontend auth forms to backend API endpoints
 
-### [Part 2 Backend] — Part 2 Backend
+### Amntony Juma — Part 2 Backend
 - Designed the `Post` Mongoose model with title, description, price, category, images, author, and status fields
 - Implemented full CRUD operations in `postsController.js` (create, read, update, delete)
 - Added search functionality with case-insensitive regex matching across title, description, and category
@@ -58,7 +58,7 @@
 - Populated author data in API responses for consistent frontend consumption
 - Configured listing status workflow (active, published, archived)
 
-### [Part 2 Frontend] — Part 2 Frontend
+### Antony Juma — Part 2 Frontend
 - Built the `Home.jsx` listings page with grid layout structure
 - Created `PostCard.jsx` as a reusable component for listing previews
 - Implemented `CategoryPage.jsx` for filtered browsing by category
@@ -69,7 +69,7 @@
 - Set up `HeroSection.jsx` for the landing page
 - Configured `Layout` components for consistent page structure
 
-### [Part 3 Frontend] — Part 3 Frontend
+### Jacob Mbuco — Part 3 Frontend
 - Extended `PostDetail.jsx` with comments section and comment creation form
 - Added like and dislike reaction controls with visual state feedback
 - Built `ConfirmDialog.jsx` for destructive action confirmations
