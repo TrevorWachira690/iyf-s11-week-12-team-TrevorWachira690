@@ -134,7 +134,7 @@ export default function Home() {
         <div className="rounded-xl bg-slate-900/30 dark:bg-slate-800/50 p-4 mb-6 border border-slate-200/20 dark:border-slate-700/30">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">TBM-DeepIn</h1>
-            {user && (
+            {user?.role === 'business' && (
               <button
                 onClick={() => setShowCreateForm(!showCreateForm)}
                 className="bg-indigo-600 text-white rounded px-4 py-2 hover:bg-indigo-700"
