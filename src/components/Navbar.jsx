@@ -27,12 +27,11 @@ export default function Navbar() {
 
           {user ? (
             <>
-              <Link to="/admin" className="hover:text-indigo-600 dark:hover:text-indigo-400">
-                Dashboard
-              </Link>
-              <Link to={`/profile/${user._id}`} className="hover:text-indigo-600 dark:hover:text-indigo-400">
-                Profile
-              </Link>
+              {user.role === 'business' && (
+                <Link to="/admin" className="hover:text-indigo-600 dark:hover:text-indigo-400">
+                  Dashboard
+                </Link>
+              )}
               <button
                 onClick={handleLogout}
                 className="px-3 py-1 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
