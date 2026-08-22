@@ -5,7 +5,7 @@ CommunityHub is a full-stack small-business marketplace platform built by a 7-pe
 ## Live Demo
 
 - Frontend: https://iyf-s11-week-12-team-trevorwachira690.onrender.com/
-- API: https://iyf-s11-week-12-team-trevorwachira690.onrender.com/api
+- API: https://iyf-s11-week-12-team-trevorwachira690.onrender.com/api/health
 
 ## Features
 
