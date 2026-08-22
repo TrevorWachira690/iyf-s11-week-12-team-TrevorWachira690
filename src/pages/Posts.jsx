@@ -1,7 +1,7 @@
 // JACOB — Frontend: Posts, Comments & Likes
 //
 // Copy your working code here.
-// Shows one post plus its comments, and lets people comment/like.
+// Shows the full feed/list of posts.
 //
 // Paste your code below this line:
 

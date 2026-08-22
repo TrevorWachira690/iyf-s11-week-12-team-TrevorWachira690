@@ -1,5 +1,7 @@
-// Owned by: Part 1, Person B
-// See: docs/part-1-accounts-and-login/person-b-frontend.md
+// CHRISTINE — Frontend: Accounts & Profiles
 //
-// The page where a user can view and edit their own profile.
+// Copy your working code here.
+// Shows one user's profile and their posts.
+//
+// Paste your code below this line:
 

@@ -1,5 +1,7 @@
-// Owned by: Part 1, Person B
-// See: docs/part-1-accounts-and-login/person-b-frontend.md
+// CHRISTINE — Frontend: Accounts & Profiles
 //
-// The page where a new user signs up as a business or a customer.
+// Copy your working code here.
+// The registration page/form.
+//
+// Paste your code below this line:
 

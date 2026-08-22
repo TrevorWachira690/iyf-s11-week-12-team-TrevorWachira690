@@ -1,7 +1,7 @@
 // JACOB — Frontend: Posts, Comments & Likes
 //
 // Copy your working code here.
-// Shows one post plus its comments, and lets people comment/like.
+// The form for creating a new post.
 //
 // Paste your code below this line:
 

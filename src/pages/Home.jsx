@@ -1,5 +1,7 @@
-// Owned by: Part 2, Person B
-// See: docs/part-2-listings-page/
+// GROUP LEADER — Shared / Wiring
 //
-// The main page showing all listings.
+// Copy your working code here.
+// The public landing page shown at "/".
+//
+// Paste your code below this line:
 

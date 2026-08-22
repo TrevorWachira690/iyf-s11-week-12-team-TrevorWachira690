@@ -1,7 +1,7 @@
 // TREVOR — Backend: Accounts & Profiles
 //
 // Copy your working code here.
-// Defines the User schema (name, email, password, bio, avatar, etc.).
+// Like auth.js, but doesn't block the request if there's no token.
 //
 // Paste your code below this line:
 

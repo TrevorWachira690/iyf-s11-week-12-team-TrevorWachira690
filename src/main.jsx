@@ -1,5 +1,7 @@
-// SHARED FILE - used by everyone
-// See: docs/TEAM_DIVISION.md
+// GROUP LEADER — Shared / Wiring
 //
-// The very first file that runs when the app starts.
+// Copy your working code here.
+// The React app's entry point.
+//
+// Paste your code below this line:
 

@@ -1,6 +1,7 @@
-// SHARED FILE - used by everyone
-// See: docs/TEAM_DIVISION.md
+// GROUP LEADER — Shared / Wiring
 //
-// This decides which page shows for which web address. The group
-// leader reviews changes to this file.
+// Copy your working code here.
+// Sets up all the page routes and connects every page everyone else builds.
+//
+// Paste your code below this line:
 

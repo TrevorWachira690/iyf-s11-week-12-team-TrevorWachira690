@@ -1,5 +1,7 @@
-// Owned by: Part 1, Person B
-// See: docs/part-1-accounts-and-login/person-b-frontend.md
+// GROUP LEADER — Shared / Wiring
 //
-// Wraps a page so it's only visible to logged-in users.
+// Copy your working code here.
+// Blocks pages from people who aren't logged in.
+//
+// Paste your code below this line:
 

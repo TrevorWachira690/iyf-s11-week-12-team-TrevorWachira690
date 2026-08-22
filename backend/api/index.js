@@ -1,7 +1,7 @@
 // GROUP LEADER — Shared / Wiring
 //
 // Copy your working code here.
-// The one shared function every page uses to talk to the backend.
+// Vercel serverless entry point — imports the same Express app for deployment.
 //
 // Paste your code below this line:
 

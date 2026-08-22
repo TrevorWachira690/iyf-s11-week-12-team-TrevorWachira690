@@ -1,7 +1,7 @@
 // CHRISTINE — Frontend: Accounts & Profiles
 //
 // Copy your working code here.
-// The shared "who's logged in" state used across the app.
+// The form for editing your own profile.
 //
 // Paste your code below this line:
 

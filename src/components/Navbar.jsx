@@ -1,7 +1,7 @@
 // GROUP LEADER — Shared / Wiring
 //
 // Copy your working code here.
-// The one shared function every page uses to talk to the backend.
+// The shared navigation bar shown on every page.
 //
 // Paste your code below this line:
 

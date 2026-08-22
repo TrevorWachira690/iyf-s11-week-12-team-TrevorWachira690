@@ -1,6 +1,7 @@
-// Owned by: Part 3, Person A
-// See: docs/part-3-comments-and-likes/
+// KAYSIR — Backend: Posts, Comments & Likes
 //
-// This file describes what information gets saved about a comment
-// (the text, who wrote it, which listing it belongs to).
+// Copy your working code here.
+// Defines the Comment schema (content, author, post, etc.).
+//
+// Paste your code below this line:
 
