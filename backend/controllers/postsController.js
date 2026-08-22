@@ -4,6 +4,10 @@ const Post = require("../models/Post");
 
 const createPost = async (req, res) => {
   try {
+    if (req.user.role !== 'business') {
+      return res.status(403).json({ error: 'You have to be a business to make a listing.', message: 'You have to be a business to make a listing.' });
+    }
+
     const { title, description, price, category, image, images } = req.body;
 
     const post = await Post.create({
@@ -28,7 +32,7 @@ const createPost = async (req, res) => {
 
 // Get all listings
 const getPosts = async (req, res) => {
-        try {
+    try {
         const {
             search,
             category,
@@ -65,8 +69,8 @@ const getPosts = async (req, res) => {
 
             const totalPages = Math.ceil(totalPosts / limit);
 
-                res.status(200).json({
-          posts,
+        res.status(200).json({
+            posts,
             pagination: {
                 currentPage: Number(page),
                 totalPages,
@@ -176,6 +180,3 @@ module.exports = {
     updatePost,
     deletePost
 };
-
-
-
