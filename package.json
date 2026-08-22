@@ -1,28 +1,23 @@
 {
-  "name": "community-hub",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "community-hub-backend",
+  "version": "1.0.0",
+  "description": "Backend for the Student Community Hub (Express + MongoDB + JWT)",
+  "main": "server.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && cd backend && npm install",
-    "start": "cd backend && npm start",
-    "lint": "oxlint",
-    "preview": "vite preview"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "react-router-dom": "^7.8.2",
-    "vite": "^8.2.0",
-    "@vitejs/plugin-react": "^6.0.4",
-    "tailwindcss": "^3.4.0",
-    "autoprefixer": "^10.4.0",
-    "postcss": "^8.4.0"
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "express-validator": "^7.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.5.2"
   },
   "devDependencies": {
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
-    "oxlint": "^1.75.0"
+    "nodemon": "^3.1.4"
   }
 }
