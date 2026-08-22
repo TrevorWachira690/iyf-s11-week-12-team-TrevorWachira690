@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const config = require('./config');
@@ -35,9 +36,23 @@ app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/users', userRoutes);
 
-app.get('/', (req, res) => {
-  res.json({ message: 'TBM-DeepIn API is running. See /api/health for status.' });
-});
+// Serve the built React frontend (single-server deploy).
+// The frontend lives at the repo root, so Vite outputs to ../dist
+// relative to this file (backend/server.js).
+if (config.nodeEnv === 'production') {
+  const distPath = path.join(__dirname, '..', 'dist');
+  app.use(express.static(distPath));
+
+  // Any route that isn't /api/* falls through to the React app,
+  // so client-side routing (React Router) works on refresh/direct links.
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+} else {
+  app.get('/', (req, res) => {
+    res.json({ message: 'TBM-DeepIn API is running. See /api/health for status.' });
+  });
+}
 
 app.use(notFound);
 app.use(errorHandler);
