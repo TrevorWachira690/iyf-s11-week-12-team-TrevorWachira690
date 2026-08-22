@@ -8,7 +8,6 @@ import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
 import BusinessListings from './pages/BusinessListings.jsx';
-import Profile from './pages/Profile.jsx';
 import CategoryPage from './pages/CategoryPage.jsx';
 
 // This file is SHARED across all groups. Flag any changes in the group
@@ -23,7 +22,6 @@ export default function App() {
         <Route path="/category/:category" element={<CategoryPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/profile/:id" element={<Profile />} />
         <Route path="/business/:id/listings" element={<BusinessListings />} />
         <Route
           path="/admin"
@@ -37,4 +35,6 @@ export default function App() {
     </div>
   );
 }
+ 
+
  
