@@ -1,9 +1,3 @@
-// GROUP LEADER — Shared / Wiring
-//
-// Copy your working code here.
-// Sets up Express itself: middleware, CORS, rate limiting, and mounts all route files.
-//
-// Paste your code below this line:
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -60,4 +54,3 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 app.use((req, res) => res.status(404).json({ message: 'Route not found.' }));
 
 module.exports = app;
-
