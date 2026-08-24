@@ -4,8 +4,8 @@ CommunityHub is a full-stack social platform built by a team of students, where 
 
 ## Live Demo
 
-- Frontend: https://your-frontend.vercel.app
-- API: https://your-api.onrender.com/api
+- Frontend: https://iyf-s11-week-12-team-trevor-wachira-tau.vercel.app
+- API: https://community-hub-api-nxqa.onrender.com/api
 
 ## Features
 
