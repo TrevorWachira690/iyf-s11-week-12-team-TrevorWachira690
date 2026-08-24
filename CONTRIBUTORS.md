@@ -9,7 +9,7 @@
 | Christine | [@kaywambui-1](https://github.com/kaywambui-1) | User Profiles | Viewing and editing profiles |
 | Kaysir | [@itskaysir](https://github.com/itskaysir) | Backend Configuration & API Routing | Database connection setup and API endpoints |
 | Jacob | [@jacobricktified](https://github.com/jacobricktified) | Authentication & Post Feed | Login, registration, and the post feed |
-| Brian | [@brianirungu224-sys](https://github.com/brianirungu224-sys) | Landing Page & Messaging | Homepage and direct messaging |
+| Brian | [@brianirungu224-sys](https://github.com/brianirungu224-sys) | Landing Page & Messaging | Homepage and Direct Messaging |
 
 ## Contribution Breakdown
 
