@@ -22,9 +22,20 @@ const allowedOrigins = (process.env.CLIENT_ORIGIN || '')
   .map((o) => o.trim())
   .filter(Boolean);
 
+console.log('[cors] Allowed origins:', allowedOrigins);
+
 app.use(
   cors({
-    origin: allowedOrigins.length ? allowedOrigins : '*',
+    origin: (origin, callback) => {
+      // Allow requests with no origin (curl, Postman, server-to-server)
+      if (!origin) return callback(null, true);
+      if (!allowedOrigins.length || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      console.warn('[cors] Rejected origin:', origin);
+      return callback(null, false);
+    },
+    credentials: true,
   })
 );
 // Raised from Express's 100kb default because posts/avatars can include a
